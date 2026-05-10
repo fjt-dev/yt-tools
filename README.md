@@ -1,26 +1,29 @@
-# yt-miniplayer
+# yt-tools
 
-Chrome Extension to Restore YouTube.com Miniplayer Button
+Chrome extension that restores the YouTube miniplayer button and removes Shorts
 
 ## Features
 
 - Automatically adds a miniplayer button to YouTube's video control bar
+- I will delete the Shorts from YouTube.
 - Toggle on/off via the extension popup
 - No data collection or tracking
 
 ## Screenshots
 
 ### Before
-![Control bar without the Miniplayer button](./screenshots/before.png)
+![Control bar without the Miniplayer button](./screenshots/before_1.png)
+![](./screenshots/before_2.png)
 
 ### After
-![Control bar with the Miniplayer button](./screenshots/after.png)
+![Control bar with the Miniplayer button](./screenshots/after_1.png)
+![](./screenshots/after_2.png)
 
 ## Installation
 
 1. Clone or download this repository
 ```bash
-   git clone https://github.com/fjt-dev/yt-miniplayer
+   git clone https://github.com/fjt-dev/yt-tools
 ```
 2. Open Chrome and navigate to `chrome://extensions/`
 3. Enable **Developer mode** (toggle in the top-right corner)
