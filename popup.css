@@ -60,6 +60,8 @@ body {
 }
 .toggle input:checked ~ .toggle-thumb { transform: translateX(20px); }
 
+.card-title { font-size: 11px; color: #aaaaaa; font-weight: 500; margin-bottom: 10px; }
+
 .status-description { margin-top: 10px; font-size: 11px; color: #aaaaaa; line-height: 1.5; }
 .status-description span { color: #FF0033; font-weight: 500; }
 .status-description span.off { color: #888888; }

@@ -22,6 +22,7 @@
   </div>
 
   <div class="status-card active" id="statusCard">
+    <div class="card-title">Miniplayer Button</div>
     <div class="status-row">
       <div class="status-label">
         <div class="status-dot" id="statusDot"></div>
@@ -35,6 +36,24 @@
     </div>
     <div class="status-description">
       Miniplayer button is <span id="statusSpan">enabled</span> on YouTube.
+    </div>
+  </div>
+
+  <div class="status-card" id="shortsCard">
+    <div class="card-title">Shorts Blocker</div>
+    <div class="status-row">
+      <div class="status-label">
+        <div class="status-dot off" id="shortsDot"></div>
+        <span class="status-text" id="shortsText">Disabled</span>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" id="shortsToggle" />
+        <div class="toggle-track"></div>
+        <div class="toggle-thumb"></div>
+      </label>
+    </div>
+    <div class="status-description">
+      Shorts Blocker is <span id="shortsSpan" class="off">disabled</span> on YouTube.
     </div>
   </div>
 

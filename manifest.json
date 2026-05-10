@@ -1,9 +1,15 @@
 {
   "manifest_version": 3,
   "name": "yt-miniplayer",
-  "version": "1.0.2",
-  "description": "Add a mini-player button to the YouTube control bar.",
-  "permissions": ["storage"],
+  "version": "1.1.0",
+  "description": "Add a mini-player button to the YouTube control bar. Optionally block YouTube Shorts.",
+  "permissions": ["storage", "declarativeNetRequest", "tabs"],
+  "host_permissions": ["https://www.youtube.com/*"],
+  "declarative_net_request": {
+    "rule_resources": [
+      { "id": "ruleset_shorts", "enabled": false, "path": "rules.json" }
+    ]
+  },
   "action": {
     "default_popup": "popup.html",
     "default_icon": {

@@ -30,6 +30,64 @@
     if (existing) existing.remove();
   }
 
+  // --- Shorts Blocker ---
+
+  const SHORTS_LABELS = ['ショート', 'Shorts'];
+
+  function isShortsLabel(text) {
+    return SHORTS_LABELS.includes(text.trim());
+  }
+
+  function removeShorts() {
+    document.querySelectorAll('ytd-guide-entry-renderer').forEach((el) => {
+      const title = el.querySelector('.title');
+      if (title && isShortsLabel(title.textContent)) el.remove();
+    });
+    document.querySelectorAll('ytd-mini-guide-entry-renderer').forEach((el) => {
+      const label = el.querySelector('.guide-entry-label');
+      if (label && isShortsLabel(label.textContent)) el.remove();
+    });
+    document.querySelectorAll('yt-chip-cloud-chip-renderer').forEach((el) => {
+      const text = el.querySelector('yt-formatted-string');
+      if (text && isShortsLabel(text.textContent)) el.remove();
+    });
+    document.querySelectorAll('ytd-rich-shelf-renderer').forEach((el) => {
+      const title = el.querySelector('#title-text');
+      if (title && isShortsLabel(title.textContent)) el.remove();
+    });
+  }
+
+  let shortsTimer;
+  function debouncedRemoveShorts() {
+    clearTimeout(shortsTimer);
+    shortsTimer = setTimeout(removeShorts, 300);
+  }
+
+  let shortsObserver = null;
+
+  function startShortsBlocking() {
+    removeShorts();
+    if (!shortsObserver) {
+      shortsObserver = new MutationObserver(debouncedRemoveShorts);
+      shortsObserver.observe(document.body, { childList: true, subtree: true });
+    }
+  }
+
+  function stopShortsBlocking() {
+    if (shortsObserver) {
+      shortsObserver.disconnect();
+      shortsObserver = null;
+    }
+  }
+
+  if (isExtensionContextValid()) {
+    chrome.storage.local.get({ shortsBlocked: false }, (result) => {
+      if (result.shortsBlocked) startShortsBlocking();
+    });
+  }
+
+  // --- メッセージリスナー ---
+
   /**
    * ポップアップからのメッセージを受信する
    */
@@ -39,6 +97,13 @@
         injectButton();
       } else {
         removeButton();
+      }
+    }
+    if (message.type === 'shortsToggle') {
+      if (message.enabled) {
+        startShortsBlocking();
+      } else {
+        stopShortsBlocking();
       }
     }
   });
