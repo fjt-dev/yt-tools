@@ -33,6 +33,26 @@
   // --- Shorts Blocker ---
 
   const SHORTS_LABELS = ['ショート', 'Shorts'];
+  const SHORTS_STYLE_ID = 'yt-shorts-blocker-style';
+
+  // CSS で即座に非表示にできる Shorts 要素（テキスト照合不要なもの）
+  const SHORTS_CSS = [
+    'ytd-rich-shelf-renderer[is-shorts]',
+    'ytd-reel-shelf-renderer',
+  ].join(',') + '{ display: none !important; }';
+
+  function injectShortsCSS() {
+    if (document.getElementById(SHORTS_STYLE_ID)) return;
+    const style = document.createElement('style');
+    style.id = SHORTS_STYLE_ID;
+    style.textContent = SHORTS_CSS;
+    (document.head || document.documentElement).appendChild(style);
+  }
+
+  function removeShortsCSS() {
+    const style = document.getElementById(SHORTS_STYLE_ID);
+    if (style) style.remove();
+  }
 
   function isShortsLabel(text) {
     return SHORTS_LABELS.includes(text.trim());
@@ -57,23 +77,21 @@
     });
   }
 
-  let shortsTimer;
-  function debouncedRemoveShorts() {
-    clearTimeout(shortsTimer);
-    shortsTimer = setTimeout(removeShorts, 300);
-  }
-
   let shortsObserver = null;
 
   function startShortsBlocking() {
+    injectShortsCSS();
     removeShorts();
     if (!shortsObserver) {
-      shortsObserver = new MutationObserver(debouncedRemoveShorts);
-      shortsObserver.observe(document.body, { childList: true, subtree: true });
+      shortsObserver = new MutationObserver((mutations) => {
+        if (mutations.some((m) => m.addedNodes.length > 0)) removeShorts();
+      });
+      shortsObserver.observe(document.body || document.documentElement, { childList: true, subtree: true });
     }
   }
 
   function stopShortsBlocking() {
+    removeShortsCSS();
     if (shortsObserver) {
       shortsObserver.disconnect();
       shortsObserver = null;
@@ -305,7 +323,7 @@
 
     function activateObservers() {
       if (!domObserverConnected) {
-        domObserver.observe(document.body, { childList: true, subtree: true });
+        domObserver.observe(document.body || document.documentElement, { childList: true, subtree: true });
         domObserverConnected = true;
       }
       attachCastObserver();
