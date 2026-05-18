@@ -9,6 +9,9 @@ Chrome extension that restores the YouTube miniplayer button and removes Shorts
 - Toggle on/off via the extension popup
 - No data collection or tracking
 
+> [!CAUTION]
+> By default, Shorts blocking is disabled. Please enable it manually.
+
 ## Screenshots
 
 ### Before
