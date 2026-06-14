@@ -71,9 +71,13 @@
       const text = el.querySelector('yt-formatted-string');
       if (text && isShortsLabel(text.textContent)) el.remove();
     });
-    document.querySelectorAll('ytd-rich-shelf-renderer').forEach((el) => {
+    document.querySelectorAll('ytd-rich-shelf-renderer, ytd-shelf-renderer').forEach((el) => {
       const title = el.querySelector('#title-text');
       if (title && isShortsLabel(title.textContent)) el.remove();
+    });
+    document.querySelectorAll('ytd-video-renderer, ytd-compact-video-renderer').forEach((el) => {
+      const link = el.querySelector('a#video-title, a#thumbnail');
+      if (link && link.href && link.href.includes('/shorts/')) el.remove();
     });
   }
 
