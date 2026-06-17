@@ -26,5 +26,19 @@
       "urlFilter": "https://www.youtube.com/playables*",
       "resourceTypes": ["main_frame", "sub_frame"]
     }
+  },
+  {
+    "id": 3,
+    "priority": 2,
+    "action": {
+      "type": "redirect",
+      "redirect": {
+        "regexSubstitution": "https://www.youtube.com/watch?v=\\1&list=\\2"
+      }
+    },
+    "condition": {
+      "regexFilter": "^https://www\\.youtube\\.com/shorts/([a-zA-Z0-9_-]+)[^?]*\\?(?:[^&]*&)*list=([a-zA-Z0-9_-]+)",
+      "resourceTypes": ["main_frame", "sub_frame"]
+    }
   }
 ]
