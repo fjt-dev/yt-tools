@@ -33,6 +33,26 @@
   // --- Shorts Blocker ---
 
   const SHORTS_LABELS = ['ショート', 'Shorts'];
+  const GAME_ROOM_LABELS = [
+    'ゲームルーム',   // 日本語
+    'Gaming',        // English / Deutsch / Nederlands
+    '게임',           // 한국어
+    '游戏',           // 中文（简体）
+    '遊戲',           // 中文（繁體）
+    'Videojuegos',   // Español
+    'Jogos',         // Português
+    'Jeux',          // Français
+    'Giochi',        // Italiano
+    'Spiele',        // Deutsch (alternative)
+    'Игры',          // Русский
+    'الألعاب',       // العربية
+    'Oyun',          // Türkçe
+    'Gry',           // Polski
+    'เกม',           // ภาษาไทย
+    'Trò chơi',      // Tiếng Việt
+    'गेमिंग',        // हिन्दी
+    'Games',         // Bahasa Indonesia / Bahasa Melayu
+  ];
   const SHORTS_STYLE_ID = 'yt-shorts-blocker-style';
 
   // CSS で即座に非表示にできる Shorts 要素（テキスト照合不要なもの）
@@ -58,6 +78,10 @@
     return SHORTS_LABELS.includes(text.trim());
   }
 
+  function isGameRoomLabel(text) {
+    return GAME_ROOM_LABELS.includes(text.trim());
+  }
+
   function removeShorts() {
     document.querySelectorAll('ytd-guide-entry-renderer').forEach((el) => {
       const title = el.querySelector('.title');
@@ -77,20 +101,70 @@
     });
   }
 
+  function isGameRoomEntry(el) {
+    const link = el.querySelector('a');
+    if (link) {
+      const href = link.getAttribute('href') || '';
+      if (href === '/gaming' || href.startsWith('/gaming?') || href.includes('/gaming')) return true;
+    }
+    const title = el.querySelector('.title, .guide-entry-label, yt-formatted-string');
+    return title ? isGameRoomLabel(title.textContent) : false;
+  }
+
+  function removeGameRoom() {
+    document.querySelectorAll('ytd-guide-entry-renderer').forEach((el) => {
+      if (isGameRoomEntry(el)) el.remove();
+    });
+    document.querySelectorAll('ytd-mini-guide-entry-renderer').forEach((el) => {
+      if (isGameRoomEntry(el)) el.remove();
+    });
+    document.querySelectorAll('yt-chip-cloud-chip-renderer').forEach((el) => {
+      const text = el.querySelector('yt-formatted-string');
+      if (text && isGameRoomLabel(text.textContent)) el.remove();
+    });
+  }
+
+  // SPA ナビゲーション時に /shorts/ → /watch、/playables/ → ホームへ転送する
+  function redirectShortsUrl() {
+    const shortsMatch = location.pathname.match(/^\/shorts\/([a-zA-Z0-9_-]+)/);
+    if (shortsMatch) {
+      location.replace('https://www.youtube.com/watch?v=' + shortsMatch[1]);
+      return true;
+    }
+    if (location.pathname.startsWith('/playables')) {
+      location.replace('https://www.youtube.com/');
+      return true;
+    }
+    return false;
+  }
+
   let shortsObserver = null;
+  let isShortsBlocked = false;
+  let shortsRafPending = false;
 
   function startShortsBlocking() {
+    isShortsBlocked = true;
     injectShortsCSS();
     removeShorts();
+    removeGameRoom();
+    redirectShortsUrl();
     if (!shortsObserver) {
       shortsObserver = new MutationObserver((mutations) => {
-        if (mutations.some((m) => m.addedNodes.length > 0)) removeShorts();
+        if (shortsRafPending) return;
+        if (!mutations.some((m) => m.addedNodes.length > 0)) return;
+        shortsRafPending = true;
+        requestAnimationFrame(() => {
+          shortsRafPending = false;
+          removeShorts();
+          removeGameRoom();
+        });
       });
       shortsObserver.observe(document.body || document.documentElement, { childList: true, subtree: true });
     }
   }
 
   function stopShortsBlocking() {
+    isShortsBlocked = false;
     removeShortsCSS();
     if (shortsObserver) {
       shortsObserver.disconnect();
@@ -278,14 +352,26 @@
     let castObserverPlayer = null;
 
     // SPA ナビゲーション・初回注入用の広域オブザーバー
+    // ボタン注入後は disconnect して不要な監視を止める
+    let domRafPending = false;
     const domObserver = new MutationObserver(() => {
-      const rightControls = document.querySelector('.ytp-right-controls');
-      if (rightControls && !document.getElementById(BUTTON_ID)) {
+      if (document.getElementById(BUTTON_ID)) {
+        domObserver.disconnect();
+        domObserverConnected = false;
+        return;
+      }
+      if (domRafPending) return;
+      domRafPending = true;
+      requestAnimationFrame(() => {
+        domRafPending = false;
+        if (document.getElementById(BUTTON_ID)) return;
+        const rightControls = document.querySelector('.ytp-right-controls');
+        if (!rightControls) return;
         if (!isExtensionContextValid()) return;
         chrome.storage.local.get({ enabled: true }, (result) => {
           if (result.enabled) injectButton();
         });
-      }
+      });
     });
 
     // キャスト状態変化専用オブザーバー
@@ -343,6 +429,7 @@
     }
 
     document.addEventListener('yt-navigate-finish', () => {
+      if (isShortsBlocked && redirectShortsUrl()) return;
       if (isWatchPage()) {
         activateObservers();
       } else {
