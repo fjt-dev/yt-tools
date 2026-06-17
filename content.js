@@ -128,7 +128,12 @@
   function redirectShortsUrl() {
     const shortsMatch = location.pathname.match(/^\/shorts\/([a-zA-Z0-9_-]+)/);
     if (shortsMatch) {
-      location.replace('https://www.youtube.com/watch?v=' + shortsMatch[1]);
+      const params = new URLSearchParams(location.search);
+      const extra = [];
+      if (params.has('list')) extra.push('list=' + encodeURIComponent(params.get('list')));
+      if (params.has('index')) extra.push('index=' + encodeURIComponent(params.get('index')));
+      const query = extra.length ? '&' + extra.join('&') : '';
+      location.replace('https://www.youtube.com/watch?v=' + shortsMatch[1] + query);
       return true;
     }
     if (location.pathname.startsWith('/playables')) {
