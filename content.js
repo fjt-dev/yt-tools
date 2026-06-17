@@ -140,6 +140,7 @@
 
   let shortsObserver = null;
   let isShortsBlocked = false;
+  let shortsRafPending = false;
 
   function startShortsBlocking() {
     isShortsBlocked = true;
@@ -149,10 +150,14 @@
     redirectShortsUrl();
     if (!shortsObserver) {
       shortsObserver = new MutationObserver((mutations) => {
-        if (mutations.some((m) => m.addedNodes.length > 0)) {
+        if (shortsRafPending) return;
+        if (!mutations.some((m) => m.addedNodes.length > 0)) return;
+        shortsRafPending = true;
+        requestAnimationFrame(() => {
+          shortsRafPending = false;
           removeShorts();
           removeGameRoom();
-        }
+        });
       });
       shortsObserver.observe(document.body || document.documentElement, { childList: true, subtree: true });
     }
@@ -347,14 +352,26 @@
     let castObserverPlayer = null;
 
     // SPA ナビゲーション・初回注入用の広域オブザーバー
+    // ボタン注入後は disconnect して不要な監視を止める
+    let domRafPending = false;
     const domObserver = new MutationObserver(() => {
-      const rightControls = document.querySelector('.ytp-right-controls');
-      if (rightControls && !document.getElementById(BUTTON_ID)) {
+      if (document.getElementById(BUTTON_ID)) {
+        domObserver.disconnect();
+        domObserverConnected = false;
+        return;
+      }
+      if (domRafPending) return;
+      domRafPending = true;
+      requestAnimationFrame(() => {
+        domRafPending = false;
+        if (document.getElementById(BUTTON_ID)) return;
+        const rightControls = document.querySelector('.ytp-right-controls');
+        if (!rightControls) return;
         if (!isExtensionContextValid()) return;
         chrome.storage.local.get({ enabled: true }, (result) => {
           if (result.enabled) injectButton();
         });
-      }
+      });
     });
 
     // キャスト状態変化専用オブザーバー
