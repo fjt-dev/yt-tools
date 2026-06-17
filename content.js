@@ -33,7 +33,26 @@
   // --- Shorts Blocker ---
 
   const SHORTS_LABELS = ['ショート', 'Shorts'];
-  const GAME_ROOM_LABELS = ['ゲームルーム', 'Gaming'];
+  const GAME_ROOM_LABELS = [
+    'ゲームルーム',   // 日本語
+    'Gaming',        // English / Deutsch / Nederlands
+    '게임',           // 한국어
+    '游戏',           // 中文（简体）
+    '遊戲',           // 中文（繁體）
+    'Videojuegos',   // Español
+    'Jogos',         // Português
+    'Jeux',          // Français
+    'Giochi',        // Italiano
+    'Spiele',        // Deutsch (alternative)
+    'Игры',          // Русский
+    'الألعاب',       // العربية
+    'Oyun',          // Türkçe
+    'Gry',           // Polski
+    'เกม',           // ภาษาไทย
+    'Trò chơi',      // Tiếng Việt
+    'गेमिंग',        // हिन्दी
+    'Games',         // Bahasa Indonesia / Bahasa Melayu
+  ];
   const SHORTS_STYLE_ID = 'yt-shorts-blocker-style';
 
   // CSS で即座に非表示にできる Shorts 要素（テキスト照合不要なもの）
