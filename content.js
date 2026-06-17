@@ -124,11 +124,15 @@
     });
   }
 
-  // SPA ナビゲーション時に /shorts/ URL を /watch に転送する
+  // SPA ナビゲーション時に /shorts/ → /watch、/playables/ → ホームへ転送する
   function redirectShortsUrl() {
-    const match = location.pathname.match(/^\/shorts\/([a-zA-Z0-9_-]+)/);
-    if (match) {
-      location.replace('https://www.youtube.com/watch?v=' + match[1]);
+    const shortsMatch = location.pathname.match(/^\/shorts\/([a-zA-Z0-9_-]+)/);
+    if (shortsMatch) {
+      location.replace('https://www.youtube.com/watch?v=' + shortsMatch[1]);
+      return true;
+    }
+    if (location.pathname.startsWith('/playables')) {
+      location.replace('https://www.youtube.com/');
       return true;
     }
     return false;

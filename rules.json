@@ -12,5 +12,19 @@
       "regexFilter": "^https://www\\.youtube\\.com/shorts/([a-zA-Z0-9_-]+)",
       "resourceTypes": ["main_frame", "sub_frame"]
     }
+  },
+  {
+    "id": 2,
+    "priority": 1,
+    "action": {
+      "type": "redirect",
+      "redirect": {
+        "url": "https://www.youtube.com/"
+      }
+    },
+    "condition": {
+      "urlFilter": "https://www.youtube.com/playables*",
+      "resourceTypes": ["main_frame", "sub_frame"]
+    }
   }
 ]
