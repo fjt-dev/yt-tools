@@ -33,6 +33,7 @@
   // --- Shorts Blocker ---
 
   const SHORTS_LABELS = ['ショート', 'Shorts'];
+  const GAME_ROOM_LABELS = ['ゲームルーム', 'Gaming'];
   const SHORTS_STYLE_ID = 'yt-shorts-blocker-style';
 
   // CSS で即座に非表示にできる Shorts 要素（テキスト照合不要なもの）
@@ -58,6 +59,10 @@
     return SHORTS_LABELS.includes(text.trim());
   }
 
+  function isGameRoomLabel(text) {
+    return GAME_ROOM_LABELS.includes(text.trim());
+  }
+
   function removeShorts() {
     document.querySelectorAll('ytd-guide-entry-renderer').forEach((el) => {
       const title = el.querySelector('.title');
@@ -77,20 +82,53 @@
     });
   }
 
+  function removeGameRoom() {
+    document.querySelectorAll('ytd-guide-entry-renderer').forEach((el) => {
+      const title = el.querySelector('.title');
+      if (title && isGameRoomLabel(title.textContent)) el.remove();
+    });
+    document.querySelectorAll('ytd-mini-guide-entry-renderer').forEach((el) => {
+      const label = el.querySelector('.guide-entry-label');
+      if (label && isGameRoomLabel(label.textContent)) el.remove();
+    });
+    document.querySelectorAll('yt-chip-cloud-chip-renderer').forEach((el) => {
+      const text = el.querySelector('yt-formatted-string');
+      if (text && isGameRoomLabel(text.textContent)) el.remove();
+    });
+  }
+
+  // SPA ナビゲーション時に /shorts/ URL を /watch に転送する
+  function redirectShortsUrl() {
+    const match = location.pathname.match(/^\/shorts\/([a-zA-Z0-9_-]+)/);
+    if (match) {
+      location.replace('https://www.youtube.com/watch?v=' + match[1]);
+      return true;
+    }
+    return false;
+  }
+
   let shortsObserver = null;
+  let isShortsBlocked = false;
 
   function startShortsBlocking() {
+    isShortsBlocked = true;
     injectShortsCSS();
     removeShorts();
+    removeGameRoom();
+    redirectShortsUrl();
     if (!shortsObserver) {
       shortsObserver = new MutationObserver((mutations) => {
-        if (mutations.some((m) => m.addedNodes.length > 0)) removeShorts();
+        if (mutations.some((m) => m.addedNodes.length > 0)) {
+          removeShorts();
+          removeGameRoom();
+        }
       });
       shortsObserver.observe(document.body || document.documentElement, { childList: true, subtree: true });
     }
   }
 
   function stopShortsBlocking() {
+    isShortsBlocked = false;
     removeShortsCSS();
     if (shortsObserver) {
       shortsObserver.disconnect();
@@ -343,6 +381,7 @@
     }
 
     document.addEventListener('yt-navigate-finish', () => {
+      if (isShortsBlocked && redirectShortsUrl()) return;
       if (isWatchPage()) {
         activateObservers();
       } else {
