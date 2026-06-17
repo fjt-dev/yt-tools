@@ -101,14 +101,22 @@
     });
   }
 
+  function isGameRoomEntry(el) {
+    const link = el.querySelector('a');
+    if (link) {
+      const href = link.getAttribute('href') || '';
+      if (href === '/gaming' || href.startsWith('/gaming?') || href.includes('/gaming')) return true;
+    }
+    const title = el.querySelector('.title, .guide-entry-label, yt-formatted-string');
+    return title ? isGameRoomLabel(title.textContent) : false;
+  }
+
   function removeGameRoom() {
     document.querySelectorAll('ytd-guide-entry-renderer').forEach((el) => {
-      const title = el.querySelector('.title');
-      if (title && isGameRoomLabel(title.textContent)) el.remove();
+      if (isGameRoomEntry(el)) el.remove();
     });
     document.querySelectorAll('ytd-mini-guide-entry-renderer').forEach((el) => {
-      const label = el.querySelector('.guide-entry-label');
-      if (label && isGameRoomLabel(label.textContent)) el.remove();
+      if (isGameRoomEntry(el)) el.remove();
     });
     document.querySelectorAll('yt-chip-cloud-chip-renderer').forEach((el) => {
       const text = el.querySelector('yt-formatted-string');
