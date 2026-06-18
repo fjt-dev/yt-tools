@@ -92,12 +92,17 @@
       if (label && isShortsLabel(label.textContent)) el.remove();
     });
     document.querySelectorAll('yt-chip-cloud-chip-renderer').forEach((el) => {
-      const text = el.querySelector('yt-formatted-string');
-      if (text && isShortsLabel(text.textContent)) el.remove();
+      const text = el.querySelector('yt-formatted-string') ?? el;
+      if (isShortsLabel(text.textContent)) el.remove();
     });
-    document.querySelectorAll('ytd-rich-shelf-renderer').forEach((el) => {
-      const title = el.querySelector('#title-text');
+    document.querySelectorAll('ytd-reel-shelf-renderer').forEach((el) => el.remove());
+    document.querySelectorAll('ytd-rich-shelf-renderer, ytd-shelf-renderer').forEach((el) => {
+      const title = el.querySelector('#title-text, #title');
       if (title && isShortsLabel(title.textContent)) el.remove();
+    });
+    document.querySelectorAll('ytd-video-renderer, ytd-compact-video-renderer').forEach((el) => {
+      const link = el.querySelector('a#video-title, a#thumbnail');
+      if (link && link.href && link.href.includes('/shorts/')) el.remove();
     });
   }
 
