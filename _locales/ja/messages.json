@@ -5,6 +5,7 @@
   "headerSubtitle": { "message": "YouTube視聴ツール" },
   "featuresHeading": { "message": "機能" },
   "miniplayerTitle": { "message": "ミニプレイヤーボタン" },
+  "miniplayerTooltip": { "message": "ミニプレイヤー [I]" },
   "miniplayerDescription": { "message": "YouTubeのプレーヤーにミニプレイヤーボタンを追加します。" },
   "shortsTitle": { "message": "Shortsを非表示" },
   "shortsDescription": { "message": "Shortsを隠し、リンクを通常のプレーヤーで開きます。" },
