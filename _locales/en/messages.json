@@ -5,6 +5,7 @@
   "headerSubtitle": { "message": "YouTube viewing tools" },
   "featuresHeading": { "message": "Features" },
   "miniplayerTitle": { "message": "Miniplayer button" },
+  "miniplayerTooltip": { "message": "Miniplayer [I]" },
   "miniplayerDescription": { "message": "Adds a miniplayer button to the YouTube player." },
   "shortsTitle": { "message": "Hide Shorts" },
   "shortsDescription": { "message": "Hides Shorts and opens their links in the standard player." },

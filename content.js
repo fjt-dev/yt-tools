@@ -307,7 +307,7 @@
     `;
 
     const text = document.createElement('span');
-    text.textContent = 'Miniplayer';
+    text.textContent = chrome.i18n.getMessage('miniplayerTooltip') || 'Miniplayer [I]';
     text.style.cssText = `
       background: rgba(28, 28, 28, 0.9);
       color: #fff;
@@ -345,7 +345,7 @@
     const btn = document.createElement('button');
     btn.id = BUTTON_ID;
     btn.className = 'ytp-button';
-    btn.setAttribute('aria-label', 'Miniplayer');
+    btn.setAttribute('aria-label', chrome.i18n.getMessage('miniplayerTooltip') || 'Miniplayer [I]');
     // height・padding を上書きせず YouTube の .ytp-button スタイルに任せる
     // vertical-align: middle で他ボタンと縦位置を揃える
     btn.style.cssText = `
