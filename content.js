@@ -2,6 +2,7 @@
   'use strict';
 
   const BUTTON_ID = 'yt-custom-miniplayer-btn';
+  const TOOLTIP_ID = 'yt-custom-miniplayer-tooltip';
   let isMiniplayerEnabled = false;
 
   /**
@@ -29,6 +30,8 @@
   function removeButton() {
     const existing = document.getElementById(BUTTON_ID);
     if (existing) existing.remove();
+    const tooltip = document.getElementById(TOOLTIP_ID);
+    if (tooltip) tooltip.remove();
   }
 
   // --- Shorts Blocker ---
@@ -294,10 +297,9 @@
    */
   function createTooltip() {
     const container = document.createElement('div');
+    container.id = TOOLTIP_ID;
     container.style.cssText = `
       position: absolute;
-      bottom: 49px;
-      left: 50%;
       transform: translateX(-50%);
       z-index: 2147483647;
       pointer-events: none;
@@ -369,12 +371,35 @@
     btn.appendChild(img);
 
     const tooltip = createTooltip();
-    btn.appendChild(tooltip);
+    function showTooltip() {
+      const player = btn.closest('.html5-video-player');
+      if (!player) return;
+      // .ytp-button の外側に置き、ボタンの overflow による切り抜きを避ける。
+      const previous = document.getElementById(TOOLTIP_ID);
+      if (previous && previous !== tooltip) previous.remove();
+      player.appendChild(tooltip);
+      const playerRect = player.getBoundingClientRect();
+      const buttonRect = btn.getBoundingClientRect();
+      const scaleX = playerRect.width / player.offsetWidth || 1;
+      const scaleY = playerRect.height / player.offsetHeight || 1;
+      tooltip.style.left = `${(buttonRect.left + buttonRect.width / 2 - playerRect.left) / scaleX}px`;
+      tooltip.style.top = `${(buttonRect.top - playerRect.top) / scaleY - tooltip.offsetHeight - 20}px`;
+      tooltip.style.opacity = '1';
+      btn.style.opacity = '1';
+    }
 
-    btn.addEventListener('mouseenter', () => { btn.style.opacity = '1'; tooltip.style.opacity = '1'; });
-    btn.addEventListener('mouseleave', () => { btn.style.opacity = '0.9'; tooltip.style.opacity = '0'; });
+    function hideTooltip() {
+      tooltip.remove();
+      btn.style.opacity = '0.9';
+    }
+
+    btn.addEventListener('mouseenter', showTooltip);
+    btn.addEventListener('mouseleave', hideTooltip);
+    btn.addEventListener('focus', showTooltip);
+    btn.addEventListener('blur', hideTooltip);
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
+      hideTooltip();
       activateMiniPlayer();
     });
 
