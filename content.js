@@ -383,7 +383,7 @@
       const scaleX = playerRect.width / player.offsetWidth || 1;
       const scaleY = playerRect.height / player.offsetHeight || 1;
       tooltip.style.left = `${(buttonRect.left + buttonRect.width / 2 - playerRect.left) / scaleX}px`;
-      tooltip.style.top = `${(buttonRect.top - playerRect.top) / scaleY - tooltip.offsetHeight - 8}px`;
+      tooltip.style.top = `${(buttonRect.top - playerRect.top) / scaleY - tooltip.offsetHeight - 20}px`;
       tooltip.style.opacity = '1';
       btn.style.opacity = '1';
     }
